@@ -76,15 +76,24 @@ export async function handlePokedexCommand(interaction) {
     const collector = message.createMessageComponentCollector({ filter, time: 60000 });
 
     collector.on('collect', async buttonInteraction => {
-      await buttonInteraction.deferUpdate();
+      try {
+        await buttonInteraction.deferUpdate();
 
-      const selectedView = buttonInteraction.customId;
+        const selectedView = buttonInteraction.customId;
 
-      if (embeds[selectedView]) {
-        await buttonInteraction.editReply({
-          embeds: [embeds[selectedView]],
-          components: [buttons]
-        });
+        if (embeds[selectedView]) {
+          await buttonInteraction.editReply({
+            embeds: [embeds[selectedView]],
+            components: [buttons]
+          });
+        }
+      } catch (error) {
+        if (error.code === 'ChannelNotCached') {
+          console.warn(`[WARN] Tentative de modification d'un message dans un canal non mis en cache. Arrêt du collecteur.`);
+          collector.stop('channel_not_cached');
+        } else {
+          console.error(`[ERROR] Erreur inattendue lors de la collecte d'interaction: ${error.message}`);
+        }
       }
     });
 
@@ -92,7 +101,15 @@ export async function handlePokedexCommand(interaction) {
       const disabledButtons = new ActionRowBuilder().addComponents(
         buttons.components.map(button => button.setDisabled(true))
       );
-      await message.edit({ components: [disabledButtons] });
+      try {
+        await message.edit({ components: [disabledButtons] });
+      } catch (error) {
+        if (error.code === 'ChannelNotCached') {
+          console.warn(`[WARN] Impossible de désactiver les boutons : le canal n'est plus en cache.`);
+        } else {
+          console.error(`[ERROR] Erreur inattendue lors de la désactivation des boutons: ${error.message}`);
+        }
+      }
     });
 
   } catch (error) {
