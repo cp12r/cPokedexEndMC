@@ -29,9 +29,9 @@ Le projet est organisé en dossiers fonctionnels pour une meilleure lisibilité 
 
 - `commands/` : définition et gestion des commandes Discord.
 - `services/` : appels externes à l’API PokéAPI.
-- `embeds/` : construction des messages enrichis (embeds) pour Discord.
+- `embeds/` : construction des (embeds) pour Discord.
 - `utils/` : fonctions utilitaires réutilisables (ex : barre de progression).
-- `config.js` : centralisation des variables sensibles et de configuration.
+- `config.js` : configuration.
 - `index.js` : point d’entrée principal, initialisation du client et gestion des événements.
 
 Cette séparation claire permet d’isoler les responsabilités, facilitant les tests, la maintenance et les évolutions futures.
